@@ -23,7 +23,12 @@ Also you can just downlaod the project using the following [link](https://github
 docker build -t <image_name> <path_to_app>
 ```
 
-4 Create docker image:
+4 Create and run docker container:
 ```
-docker run -d -p <port>:80 -t --name <container_name> <image_name>
+docker run -d -p <host>:80 -t --name <container_name> <image_name>
+```
+
+5 Stop docker container
+```
+docker stop <container_name>
 ```
