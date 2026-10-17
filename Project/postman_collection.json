@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "Bug Diary API",
+    "description": "Requests for every endpoint of the Bug Diary API. Run in order: request 2 stores {{bugId}} used by 6, 7, 9 and 10.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Service and database health."
+      }
+    },
+    {
+      "name": "2. Create bug",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bugs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs"
+          ]
+        },
+        "description": "Creates a bug and saves its id into {{bugId}}.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"CORS error when calling the API from the frontend\",\n  \"error_message\": \"Access to fetch at 'http://localhost:8000/bugs' has been blocked by CORS policy\",\n  \"language\": \"javascript\",\n  \"category\": \"config\",\n  \"severity\": 2,\n  \"cause\": \"The backend did not send Access-Control-Allow-Origin headers\",\n  \"solution\": \"Added CORSMiddleware with the frontend origin to the allowed list\",\n  \"time_wasted_min\": 35,\n  \"fixed\": true,\n  \"tags\": [\n    \"cors\",\n    \"browser\",\n    \"fastapi\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const bug = pm.response.json();",
+              "pm.collectionVariables.set(\"bugId\", bug.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Create bug (invalid: fixed without solution)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bugs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs"
+          ]
+        },
+        "description": "Business rule check: fixed=true requires a solution, so the API answers 422.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"CORS error when calling the API from the frontend\",\n  \"error_message\": \"Access to fetch at 'http://localhost:8000/bugs' has been blocked by CORS policy\",\n  \"language\": \"javascript\",\n  \"category\": \"config\",\n  \"severity\": 2,\n  \"cause\": \"The backend did not send Access-Control-Allow-Origin headers\",\n  \"solution\": null,\n  \"time_wasted_min\": 35,\n  \"fixed\": true,\n  \"tags\": [\n    \"cors\",\n    \"browser\",\n    \"fastapi\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "4. List bugs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bugs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs"
+          ]
+        },
+        "description": "Default listing: newest first, limit 20."
+      }
+    },
+    {
+      "name": "5. List bugs (filters + sort)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bugs?language=python&fixed=true&sort=-time_wasted_min&limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs"
+          ],
+          "query": [
+            {
+              "key": "language",
+              "value": "python"
+            },
+            {
+              "key": "fixed",
+              "value": "true"
+            },
+            {
+              "key": "sort",
+              "value": "-time_wasted_min"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Filter by language and fixed status, most expensive first."
+      }
+    },
+    {
+      "name": "6. Get bug by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bugs/{{bugId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs",
+            "{{bugId}}"
+          ]
+        },
+        "description": "Fetches the bug created in step 2."
+      }
+    },
+    {
+      "name": "7. Update bug (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bugs/{{bugId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs",
+            "{{bugId}}"
+          ]
+        },
+        "description": "Full replace of the writable fields.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"CORS error when calling the API from the frontend\",\n  \"error_message\": \"Access to fetch at 'http://localhost:8000/bugs' has been blocked by CORS policy\",\n  \"language\": \"javascript\",\n  \"category\": \"config\",\n  \"severity\": 3,\n  \"cause\": \"The backend did not send Access-Control-Allow-Origin headers\",\n  \"solution\": \"Added CORSMiddleware and allowed the frontend origin, methods and headers\",\n  \"time_wasted_min\": 50,\n  \"fixed\": true,\n  \"tags\": [\n    \"cors\",\n    \"browser\",\n    \"fastapi\",\n    \"updated\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "8. Statistics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bugs/stats",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs",
+            "stats"
+          ]
+        },
+        "description": "Aggregated numbers."
+      }
+    },
+    {
+      "name": "9. Delete bug",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/bugs/{{bugId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "bugs",
+            "{{bugId}}"
+          ]
+        },
+        "description": "Deletes the bug. Empty 204 response."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "bugId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
