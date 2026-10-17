@@ -24,7 +24,7 @@ def init_db():
                 title TEXT NOT NULL,
                 author TEXT NOT NULL,
                 pages INTEGER NOT NULL CHECK (pages > 0),
-                status TEXT NOT NULL DEFAULT 'to_read',
+                status TEXT NOT NULL DEFAULT 'planned',
                 created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             )
             """
