@@ -63,7 +63,17 @@ docker compose down -v           # stop and DELETE data
 docker compose ps                # status
 ```
 
-## Data model: `bugs`
+## Postman
+
+1. Import `postman_collection.json` (Postman: *Import* > select the file).
+2. Make sure the stack is running (`docker compose up`).
+3. Run the requests in order, or use the *Collection Runner*.
+
+The collection variable `baseUrl` is `http://localhost:8000`. The `Create bug` request saves the new ID into the variable `bugId` with a test script, so *Get*, *Update* and *Delete* work as a chain. Every request has test assertions on status codes and response shape.
+
+## Documentation
+
+### Data model: `bugs`
 
 | Field | Type | Rules |
 |---|---|---|
@@ -73,7 +83,7 @@ docker compose ps                # status
 | `language` | enum | `python`, `javascript`, `typescript`, `java`, `go`, `sql`, `bash`, `docker`, `other` |
 | `category` | enum | `syntax`, `logic`, `config`, `dependency`, `network`, `database`, `typo`, `other` |
 | `severity` | integer | Required, 1-5 |
-| `cause` | string | Optional |
+| `cause` | string | Optional, **required if `fixed` is true** |
 | `solution` | string | Optional, **required if `fixed` is true** |
 | `time_wasted_min` | integer | >= 0, default 0 |
 | `fixed` | boolean | Default `false` |
@@ -81,7 +91,7 @@ docker compose ps                # status
 | `created_at` | datetime | Defaults to now. May be supplied on create. On PATCH, omitting it keeps the stored value |
 | `fixed_at` | datetime | Only allowed if `fixed` is true. Defaults to now. Must not be earlier than `created_at`. On PATCH, omitting it keeps the stored value |
 
-## API reference
+### API reference
 
 Base URL: `http://localhost:8000`.
 
@@ -95,7 +105,7 @@ Base URL: `http://localhost:8000`.
 | `GET` | `/bugs/stats` | Aggregated statistics | `200` | none |
 | `GET` | `/health` | Service and database health | `200` | `503` |
 
-### `GET /bugs`
+#### `GET /bugs`
 
 Query parameters:
 
@@ -121,11 +131,11 @@ Response `200`:
 }
 ```
 
-### `GET /bugs/{id}`
+#### `GET /bugs/{id}`
 
 Response `200`: a bug object. Response `404`: `{"detail": "Bug 999 not found"}`.
 
-### `POST /bugs`
+#### `POST /bugs`
 
 Request body:
 
@@ -146,15 +156,15 @@ Request body:
 
 Response `201`: the created bug including `id`, `created_at`, `fixed_at`. Response `422` on validation failure, for example `fixed: true` without `solution`.
 
-### `PATCH /bugs/{id}`
+#### `PATCH /bugs/{id}`
 
 Same body as `POST`; every writable field is replaced. Response `200`: the updated bug. `404` if the ID does not exist, `422` on validation failure.
 
-### `DELETE /bugs/{id}`
+#### `DELETE /bugs/{id}`
 
 Response `204` with an empty body. `404` if the ID does not exist.
 
-### `GET /bugs/stats`
+#### `GET /bugs/stats`
 
 Response `200`:
 
@@ -170,7 +180,7 @@ Response `200`:
 }
 ```
 
-### `GET /health`
+#### `GET /health`
 
 Response `200`: `{"status": "ok", "database": "up"}`. Response `503`: `{"detail": "Database is unreachable"}`.
 
@@ -178,38 +188,3 @@ Response `200`: `{"status": "ok", "database": "up"}`. Response `503`: `{"detail"
 
 * `404`, `503`, and business-rule errors from the API: `{"detail": "message"}`
 * `422` from request validation: `{"detail": [ { "loc": [...], "msg": "...", "type": "..." } ]}`
-
-## CURL examples
-
-```bash
-# create
-curl -X POST http://localhost:8000/bugs -H "Content-Type: application/json" -d '{
-  "title": "Off-by-one in pagination",
-  "error_message": "Last page shows one item too many",
-  "language": "python", "category": "logic", "severity": 2,
-  "time_wasted_min": 20, "fixed": true,
-  "solution": "offset must be (page - 1) * limit"
-}'
-
-# list with filters
-curl "http://localhost:8000/bugs?language=python&fixed=true&sort=-time_wasted_min&limit=5"
-
-# search
-curl "http://localhost:8000/bugs?q=connection"
-
-# get / update / delete
-curl http://localhost:8000/bugs/1
-curl -X PATCH http://localhost:8000/bugs/1 -H "Content-Type: application/json" -d '{ ...full body... }'
-curl -X DELETE http://localhost:8000/bugs/1
-
-# stats
-curl http://localhost:8000/bugs/stats
-```
-
-## Postman
-
-1. Import `postman_collection.json` (Postman: *Import* > select the file).
-2. Make sure the stack is running (`docker compose up`).
-3. Run the requests in order, or use the *Collection Runner*.
-
-The collection variable `baseUrl` is `http://localhost:8000`. The `Create bug` request saves the new ID into the variable `bugId` with a test script, so *Get*, *Update* and *Delete* work as a chain. Every request has test assertions on status codes and response shape.
