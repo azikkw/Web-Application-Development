@@ -44,10 +44,10 @@ class BookIn(BaseModel):
     status: Literal["planned", "reading", "threw", "finished"] = "planned"
 
 class BookUpdate(BaseModel):
-    title: str | None = Field(default=None, min_length=1)
-    author: str | None = Field(default=None, min_length=1)
+    title: str | None = Field(default=None, min_length=3)
+    author: str | None = Field(default=None, min_length=3)
     pages: int | None = Field(default=None, gt=0)
-    status: Literal["to_read", "reading", "finished"] | None = None
+    status: Literal["planned", "reading", "threw", "finished"] | None = None
 
 @app.get("/books")
 def list_books():
