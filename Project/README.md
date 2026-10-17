@@ -41,15 +41,15 @@ bug-diary/
 │   ├── requirements.txt
 │   └── app/
 │       ├── main.py          # app, lifespan (wait for DB, create tables)
-│       ├── config.py        # environment variables
+│       ├── config.py        # environment variables configuration
 │       ├── database.py      # engine, session
 │       ├── models.py        # SQLAlchemy model
 │       ├── schemas.py       # Pydantic models and validation rules
 │       └── routers/bugs.py  # CRUD + stats endpoints
 ├── docker-compose.yml
-├── .env.example
+├── .env                     # Required environment variables
 ├── postman_collection.json
-└── README.md               # Project docs.
+└── README.md                # Project docs.
 ```
 
 ## Useful commands
