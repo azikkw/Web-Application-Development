@@ -6,7 +6,6 @@ from sqlalchemy import text
 from .database import Base, engine
 from .routers import bugs
 from .schemas import ErrorResponse, HealthOut
-from . import models
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -19,7 +18,7 @@ what broke, why, how you fixed it and how many minutes it cost you.
 Stop stepping on the same rake twice.
 
 ### Business rules
-* `solution` is required when `fixed` is `true`
+* `solution` / `cause` is required when `fixed` is `true`
 * `fixed_at` is only allowed when `fixed` is `true` and must not be earlier than `created_at`
 * `severity` is 1-5, `time_wasted_min` is >= 0, `tags` has at most 10 items
 """

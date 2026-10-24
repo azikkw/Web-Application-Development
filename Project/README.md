@@ -25,7 +25,7 @@ docker compose up --build
                  backend/Dockerfile                      (no port published)
 ```
 
-* **backend**: custom image built from `backend/Dockerfile` (slim base, cached dependency layer, non-root user, `HEALTHCHECK`).
+* **backend**: custom image built from `backend/Dockerfile` (slim base, cached dependency layer, `HEALTHCHECK`).
 * **db**: official `postgres:16-alpine`. Its port is **not** published to the host; only the backend can reach it.
 * **Network:** both services are on the user-defined bridge network `app-net`. The backend connects to the database using the service name `db` as the hostname (`POSTGRES_HOST=db`), never `localhost`.
 * **Startup order:** the database has a `pg_isready` healthcheck and the backend uses `depends_on: condition: service_healthy`.
