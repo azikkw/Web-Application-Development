@@ -75,13 +75,8 @@ def bug_stats(db: Session = Depends(get_db)):
     by_category = grouped(Bug.category)
     by_language = grouped(Bug.language)
 
-    most_expensive_category = (
-        max(by_category, key=lambda c: by_category[c]["time_wasted_min"]) if by_category else None
-    )
-
-    most_expensive_language = (
-        max(by_language, key=lambda c: by_language[c]["time_wasted_min"]) if by_language else None
-    )
+    def most_expensive(column) -> str | None:
+        return max(column, key=lambda c: column[c]["time_wasted_min"]) if column else None
 
     return {
         "total_bugs": total,
@@ -89,9 +84,9 @@ def bug_stats(db: Session = Depends(get_db)):
         "unfixed": total - fixed,
         "total_time_wasted_min": int(wasted),
         "by_category": by_category,
-        "by_language": grouped(Bug.language),
-        "most_expensive_category": most_expensive_category,
-        "most_expensive_language": most_expensive_language
+        "by_language": by_language,
+        "most_expensive_category": most_expensive(by_category),
+        "most_expensive_language": most_expensive(by_language)
     }
 
 @router.get(
