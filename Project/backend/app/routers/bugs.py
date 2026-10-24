@@ -159,7 +159,6 @@ def create_bug(payload: BugCreate, db: Session = Depends(get_db)):
     bug = Bug(**_to_columns(payload))
     db.add(bug)
     db.commit()
-    db.refresh(bug)
     return bug
 
 @router.patch(
@@ -188,7 +187,6 @@ def update_bug(bug_id: int, payload: BugUpdate, db: Session = Depends(get_db)):
     ).items():
         setattr(bug, key, value)
     db.commit()
-    db.refresh(bug)
     return bug
 
 @router.delete(
